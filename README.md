@@ -75,7 +75,7 @@ Le système utilise le comptage de doigts pour définir la hauteur physique avan
       
 
   ### MODULE 3: PREPARATION IMAGE
-
+<pre>
 Frame capturee (numpy array BGR 1280x720)
     |
     v
@@ -83,7 +83,7 @@ Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
                                                 |
                                                 v
                                     HTTP POST Request (JSON)
-
+</pre>
 
   ## TIMELINE D'UNE SESSION
 
