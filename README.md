@@ -57,6 +57,7 @@ Le système utilise le comptage de doigts pour définir la hauteur physique avan
 
   ### MODULE 2: MACHINE A ETATS
 
+<pre>
 [STATE: SETUP_HEIGHT] --(1, 2 ou 3 doigts)--> [ACTION: MOVE_ACTUATOR]
        ^                                              |
        |                                              v
@@ -70,6 +71,8 @@ Le système utilise le comptage de doigts pour définir la hauteur physique avan
        |
        +--(pouce 2s)--> [PRINTING]
        +--(V-sign 2s)--> [RESET TO SETUP_HEIGHT]
+</pre>
+      
 
   ### MODULE 3: PREPARATION IMAGE
 
