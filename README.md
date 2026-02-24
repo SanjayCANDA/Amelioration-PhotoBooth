@@ -121,8 +121,8 @@ Position Milieu :  ✌
 Position Haute :  🖖
 <pre>
               # 3 doigts
-            __       __ 
-          /  |     /  /
+             _        __ 
+           /  |     /  /
           |   |    /  /
           |   |   /  /
           |   |  /  / 
