@@ -19,9 +19,9 @@ Ce projet crée un photobooth interactif et automatisé qui :
 - Arrière-plans technologiques complexes
 
 
-  ## Prérequis pour l'utilisation
+  ## Prérequis pour l'utilisation et l'application de se projet
 
-  ### Prérequis matériel
+  ###  Matériel
 
 |   Composant    |                 Spécification                      |
 |----------------|----------------------------------------------------|
@@ -33,7 +33,18 @@ Ce projet crée un photobooth interactif et automatisé qui :
 | **RAM**        | 16 GB minimum (32 GB recommandé pour SDXL)         |
 
 
-  ### Prérequis : Python 3.10 OBLIGATOIRE pour WebUi
+  ### Calibration du Vérin
+
+Avant le premier lancement, il faut définir les "Setpoints" dans votre script :
+
+Position Basse : X cm ou Y pas moteur (Contre-plongée).
+
+Position Milieu : X′cm (Hauteur d'œil).
+
+Position Haute : X′′cm (Plongée).
+
+
+  ### PPython 3.10 (OBLIGATOIRE pour WebUi)
 
 Stable Diffusion WebUI nécessite **Python 3.10.x** (pas 3.11, 3.12 ou supérieur) [web:1][web:8].
 
