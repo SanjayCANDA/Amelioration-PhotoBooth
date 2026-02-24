@@ -176,7 +176,7 @@ Impression :  👍
 
   ## APPLICATION PHOTOBOOTH (photobooth.py)
 
-  ### MODULE 1: GESTION DU VÉRIN
+  ### MODULE 1:     GESTION DU VÉRIN
 
 Le système utilise le comptage de doigts pour définir la hauteur physique avant la capture.
 <pre>
@@ -187,7 +187,7 @@ Le système utilise le comptage de doigts pour définir la hauteur physique avan
 |**HAUT**	  |    3 Doigts levés	    |    Plongée (High Angle)       |
 </pre>
 
-  ### MODULE 2: MACHINE A ETATS
+  ### MODULE 2:    MACHINE A ETATS
 
 <pre>
 [STATE: SETUP_HEIGHT] --(1, 2 ou 3 doigts)--> [ACTION: MOVE_ACTUATOR]
@@ -206,7 +206,7 @@ Le système utilise le comptage de doigts pour définir la hauteur physique avan
 </pre>
       
 
-  ### MODULE 3: PREPARATION IMAGE
+  ### MODULE 3:     PREPARATION IMAGE
 <pre>
 Frame capturee (numpy array BGR 1280x720)
     |
@@ -217,9 +217,8 @@ Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
                                     HTTP POST Request (JSON)
 </pre>
 
-  ## STABLE DIFFUSION WEBUI
 
-  ### MODULE 4: POST-TRAITEMENT
+  ### MODULE 4:    POST-TRAITEMENT
 <pre>
 Decodage Base64 --> Application Logo CPE --> Sauvegarde
     (PNG)           (Overlay RGBA)           result_API_1111/
@@ -228,7 +227,7 @@ Decodage Base64 --> Application Logo CPE --> Sauvegarde
 </pre>
 
 
-  ### MODULE 5: AFFICHAGE (OpenCV)
+  ### MODULE 5:    AFFICHAGE (OpenCV)
 
 Ecran 3840x1080 (Dual Monitor)
 
@@ -242,7 +241,7 @@ Fenetre 2: "Image StableDiffusion" (1440x1620)
 - Mise a jour apres generation
 
 
-  ### MODULE 6: IMPRESSION
+  ### MODULE 6:     IMPRESSION
 
 Files d'impression:
 1. timestamp_input.png  <---- Photo originale + logo
@@ -260,6 +259,75 @@ lp -d HP_Color_LaserJet_5700_USB
 
 CUPS Daemon --> USB --> HP LaserJet --> Photos imprimees
 
+###               GESTION DE L'ACTIONNEUR (VÉRIN LINEAIRE)
+================================================================================
+                  CONTROLE PHYSIQUE : VÉRIN 1 DDL
+================================================================================
+
+Interface: GPIO (Raspberry Pi) ou Serial (Arduino/USB)
+Protocole: PWM ou High/Low Signal
+
+LOGIQUE DE POSITIONNEMENT:
+- Position 1 (BAS)    : Signal PWM 10% ou Relais 1 ON (Contre-plongée)
+- Position 2 (MILIEU) : Signal PWM 50% ou Relais 2 ON (Angle Normal)
+- Position 3 (HAUT)   : Signal PWM 90% ou Relais 1+2 ON (Plongée)
+
+SECURITÉ:
+- Fin de course (Limit Switches) intégrés au vérin.
+- Timeout de mouvement : 8 secondes max.
+
+###               STABLE DIFFUSION WEBUI (Automatic1111)
+================================================================================
+                STABLE DIFFUSION WEBUI (Automatic1111)
+                    Port: 127.0.0.1:7860 - API REST
+================================================================================
+
+Endpoint: POST /sdapi/v1/img2img
+
+Payload JSON:
+{
+  "init_images": ["base64_image"],
+  "prompt": "comic book illustration, ligne claire style, clean lines...",
+  "negative_prompt": "photorealistic, blurry, messy, low quality...",
+  "denoising_strength": 0.62,
+  "steps": 28,
+  "cfg_scale": 7.5,
+  "sampler_name": "DPM++ 2M Karras",
+  "width": 1280, "height": 720,
+  "batch_size": 1,
+  "n_iter": 2,
+  "controlnet_units": [{
+    "model": "kohya_controllllite_xl_openpose_anime",
+    "module": "openpose_full",
+    "weight": 0.95,
+    "guidance_start": 0.0,
+    "guidance_end": 1.0
+  }]
+}
+
+PIPELINE DE GENERATION (Post-Ajustement Vérin)
+----------------------------------------------
+1. Cadrage Physique  --> Défini par le vérin (Bas/Milieu/Haut)
+2. ControlNet        --> Détecte le squelette selon l'angle choisi
+3. SDXL UNet         --> Génère l'image 1280x720 (28 steps)
+4. VAE Decoder       --> Conversion Latent vers Image finale
+
+MODELES CHARGÉS EN VRAM GPU:
+- sd_xl_base_1.0.safetensors (6.9 GB)
+- kohya_controllllite_xl_openpose_anime (1.5 GB)
+- VAE SDXL (335 MB)
+TOTAL: ~9-12 GB VRAM
+
+Response JSON:
+{
+  "images": [
+    "iVBORw0KGgoAAAANS...",  // Image IA #1 (Vue selon position vérin)
+    "9j/4AAQSkZJRgABA...",   // Image IA #2 (Vue selon position vérin)
+    ...
+  ]
+}
+  ### Remarque :
+ Le fait d'avoir le vérin avant l'envoi à Stable Diffusion est crucial. Comme l'angle de vue change (Plongée vs Contre-plongée), le module OpenPose va détecter des coordonnées de squelette différentes. SDXL adaptera donc la perspective de l'illustration "Comic Book" pour qu'elle corresponde parfaitement à la posture physique de l'utilisateur.
 
 
   ### FLUX DE DONNEES
@@ -302,10 +370,10 @@ VRAM: 9-12 GB                       VRAM: 0 GB
 
 t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
 
-t=1s      Détection stable -> Activation du vérin vers position HAUTE.
+t=4s      Détection stable -> Activation du vérin vers position HAUTE.
           Affichage : "Déplacement caméra en cours..."
 
-t=5-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
+t=4-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
           Affichage : Retour vidéo Live (Vue Plongée).
 
 t=10s     Utilisateur fait signe V (✌️) pendant 2s.
@@ -329,7 +397,7 @@ t=60s     Etat: "waiting_victory" (pret nouvelle session)
 
 ## DEPENDANCES CLES
 
-
+<pre>
 photobooth.py                    Automatic1111 WebUI
 +-- opencv-python 4.11.0.86      +-- torch 2.5.1+cu121
 +-- mediapipe 0.10.21            +-- diffusers 0.31.0
@@ -344,12 +412,12 @@ Partagés (système):
 +-- CUDA Toolkit 12.1
 +-- cuDNN 9.1
 +-- NVIDIA Driver 525+
-
+</pre>
 
 
 ## RESUME ARCHITECTURE SIMPLIFIEE
 
-
+<pre>
 [Signe Main]
             |
             v
@@ -374,7 +442,7 @@ Partagés (système):
       |           |
       v           v
    [Écran]   [Imprimante]
-
+</pre>
 
 
 
