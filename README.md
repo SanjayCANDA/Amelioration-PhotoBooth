@@ -567,65 +567,61 @@ Le code passera par un nouvel état initial SETUP_HEIGHT :
 
 ### Problèmes Mécaniques et Physiques
 
-Vibrations et Flou : Le mouvement du vérin peut faire trembler le support de la caméra. Si une photo est prise juste après le mouvement, elle risque d'être floue, ce qui ruinera la détection OpenPose de Stable Diffusion.
+#### Problèmes de Sécurité (Hardware)
 
-Gestion des Câbles (Cable Management) : La webcam est reliée par un câble USB. Avec les mouvements répétés de montée/descente, le câble peut se tendre, se coincer dans le mécanisme ou finir par s'arracher.
+**Échauffement du Contrôleur** : Un vérin consomme beaucoup de courant lors du démarrage. Si le driver (L298N ou relais) n'est pas bien refroidi, il peut griller.
 
-Inertie et Précision : Selon la qualité du vérin, l'arrêt peut ne pas être instantané. La position "Milieu" peut dériver avec le temps (phénomène de glissement).
+**Points de Pincement** : Le vérin crée une zone de cisaillement. Il faut s'assurer qu'aucun utilisateur (surtout des enfants) ne puisse mettre ses doigts dans le mécanisme pendant le réglage.
 
-### Problèmes de Sécurité (Hardware)
+**Absence de Capteurs de Fin de Course** : Si le code envoie l'ordre de descendre alors que le vérin est déjà en bas, le moteur peut forcer, chauffer et réduire sa durée de vie.
 
-Échauffement du Contrôleur : Un vérin consomme beaucoup de courant lors du démarrage. Si le driver (L298N ou relais) n'est pas bien refroidi, il peut griller.
+#### Problèmes d'Interface et d'UX (Expérience Utilisateur)
 
-Points de Pincement : Le vérin crée une zone de cisaillement. Il faut s'assurer qu'aucun utilisateur (surtout des enfants) ne puisse mettre ses doigts dans le mécanisme pendant le réglage.
+**Latence de Réaction** : Un vérin est lent (souvent quelques centimètres par seconde). L'utilisateur pourrait croire que le système ne fonctionne pas s'il n'y a pas de retour visuel immédiat ("Mouvement en cours...") sur l'écran.
 
-Absence de Capteurs de Fin de Course : Si le code envoie l'ordre de descendre alors que le vérin est déjà en bas, le moteur peut forcer, chauffer et réduire sa durée de vie.
-
-### Problèmes d'Interface et d'UX (Expérience Utilisateur)
-
-Latence de Réaction : Un vérin est lent (souvent quelques centimètres par seconde). L'utilisateur pourrait croire que le système ne fonctionne pas s'il n'y a pas de retour visuel immédiat ("Mouvement en cours...") sur l'écran.
-
-Conflits de Gestes : * Faire 2 doigts pour choisir la "Hauteur Milieu" déclenche-t-il immédiatement la photo ?
+**Conflits de Gestes** : * Faire 2 doigts pour choisir la "Hauteur Milieu" déclenche-t-il immédiatement la photo ?
 
 Il faut une séparation stricte entre le Menu Réglage et le Menu Capture pour éviter que la caméra ne bouge pendant que l'utilisateur pose.
 
-Sortie de Cadre : En changeant de hauteur, l'utilisateur peut se retrouver hors-champ (trop haut ou trop bas). Le système doit alors l'inviter à reculer ou s'avancer.
+**Sortie de Cadre** : En changeant de hauteur, l'utilisateur peut se retrouver hors-champ (trop haut ou trop bas). Le système doit alors l'inviter à reculer ou s'avancer.
 
 ### Problèmes Logiciels (Code)
 
-Blocage du Thread (Freezing) : Si la fonction move_actuator() est "bloquante" (attend que le vérin finisse), l'affichage de la webcam va se figer. Il faut utiliser des threads séparés ou une approche asynchrone.
+**Blocage du Thread (Freezing)** : Si la fonction move_actuator() est "bloquante" (attend que le vérin finisse), l'affichage de la webcam va se figer. Il faut utiliser des threads séparés ou une approche asynchrone.
 
-Bruit dans le comptage de doigts : MediaPipe peut hésiter entre 2 et 3 doigts si la main tremble. Cela pourrait faire "pomper" le vérin (monter/descendre sans arrêt). Il faut un système de verrouillage (une fois la position choisie, on ne peut plus en changer sans un geste de reset).
+**Bruit dans le comptage de doigts** : MediaPipe peut hésiter entre 2 et 3 doigts si la main tremble. Cela pourrait faire "pomper" le vérin (monter/descendre sans arrêt). Il faut un système de verrouillage (une fois la position choisie, on ne peut plus en changer sans un geste de reset).
 
 
 
 ## Amélioration de l'IA et du Rendu (Software)
 
-Multi-ControlNet : Actuellement, vous utilisez OpenPose. Ajouter Canny ou Depth en parallèle permettrait de conserver non seulement la pose de l'utilisateur, mais aussi la structure précise des objets qu'il tient (ex: un accessoire de photobooth) ou les détails de l'arrière-plan.
+**Multi-ControlNet** : Actuellement, vous utilisez OpenPose. Ajouter Canny ou Depth en parallèle permettrait de conserver non seulement la pose de l'utilisateur, mais aussi la structure précise des objets qu'il tient (ex: un accessoire de photobooth) ou les détails de l'arrière-plan.
 
-Inpainting Automatique : Utiliser l'IA pour corriger uniquement les visages ou les mains après la génération (souvent les points faibles de SDXL), afin de garantir un résultat esthétique parfait à chaque impression.
+**Inpainting Automatique** : Utiliser l'IA pour corriger uniquement les visages ou les mains après la génération (souvent les points faibles de SDXL), afin de garantir un résultat esthétique parfait à chaque impression.
 
-Styles Dynamiques : Permettre à l'utilisateur de choisir son univers via un geste (ex: 4 doigts pour un style "Cyberpunk", 5 doigts pour "Peinture à l'huile") au lieu de rester figé sur la "Ligne Claire".
+**Styles Dynamiques** : Permettre à l'utilisateur de choisir son univers via un geste (ex: 4 doigts pour un style "Cyberpunk", 5 doigts pour "Peinture à l'huile") au lieu de rester figé sur la "Ligne Claire".
 
 ### Évolution Mécanique et Hardware
 
-Asservissement par le Regard (Auto-Framing) : Au lieu de positions fixes (Haut/Milieu/Bas), le vérin pourrait s'ajuster dynamiquement pour que le visage de l'utilisateur soit toujours parfaitement centré au milieu de l'image (via les coordonnées du nez détectées par MediaPipe).
+**Asservissement par le Regard (Auto-Framing)** : Au lieu de positions fixes (Haut/Milieu/Bas), le vérin pourrait s'ajuster dynamiquement pour que le visage de l'utilisateur soit toujours parfaitement centré au milieu de l'image (via les coordonnées du nez détectées par MediaPipe).
 
-Ajout d'un 2ème Axe (Pan/Tilt) : Rajouter un moteur de rotation horizontale pour que la caméra puisse suivre l'utilisateur s'il se déplace latéralement dans la pièce.
+**Ajout d'un 2ème Axe (Pan/Tilt)** : Rajouter un moteur de rotation horizontale pour que la caméra puisse suivre l'utilisateur s'il se déplace latéralement dans la pièce.
 
 Éclairage Adaptatif (Ring Light Smart) : Connecter une bague LED dont l'intensité et la température de couleur (chaud/froid) changent en fonction du style IA choisi ou de la luminosité ambiante détectée.
 
 ### Interaction et Expérience Utilisateur (UX)
 
-Réalité Augmentée "Ghost" : Afficher sur l'écran un contour transparent (pose de référence) que l'utilisateur doit essayer d'imiter pour obtenir la meilleure génération IA possible.
+**Réalité Augmentée "Ghost"** : Afficher sur l'écran un contour transparent (pose de référence) que l'utilisateur doit essayer d'imiter pour obtenir la meilleure génération IA possible.
 
-Envoi Cloud / QR Code : Au lieu de simplement imprimer, générer un QR Code unique sur l'écran à la fin du processus pour que l'utilisateur puisse télécharger sa photo directement sur son smartphone.
+**Envoi Cloud / QR Code** : Au lieu de simplement imprimer, générer un QR Code unique sur l'écran à la fin du processus pour que l'utilisateur puisse télécharger sa photo directement sur son smartphone.
 
 Audio-Réactivité : Ajouter des instructions vocales synthétisées ("Levez deux doigts pour monter la caméra") ou des sons déclenchés par les mouvements du vérin pour rendre la machine plus "vivante".
 
 ### Robustesse et Déploiement
 
-Mode "Kiosque" Sécurisé : Verrouiller le système d'exploitation pour que l'utilisateur ne puisse pas fermer la fenêtre OpenCV ou accéder au bureau Windows/Linux.
+**Mode "Kiosque" Sécurisé** : Verrouiller le système d'exploitation pour que l'utilisateur ne puisse pas fermer la fenêtre OpenCV ou accéder au bureau Windows/Linux.
 
-Gestion de File d'Attente : Si beaucoup de gens utilisent le photobooth, implémenter un système qui traite les images en arrière-plan pendant que la personne suivante se place, afin d'optimiser le débit du GPU.
+**Gestion de File d'Attente** : Si beaucoup de gens utilisent le photobooth, implémenter un système qui traite les images en arrière-plan pendant que la personne suivante se place, afin d'optimiser le débit du GPU.
+
+
 
