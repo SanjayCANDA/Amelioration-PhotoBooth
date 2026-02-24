@@ -43,6 +43,8 @@ Position Milieu : X′cm (Hauteur d'œil).
 
 Position Haute : X′′cm (Plongée).
 
++ Alimentation : Bloc 12V/24V externe (les ports USB/GPIO ne suffisent pas à alimenter un vérin).
+
 
   ### Python 3.10 (OBLIGATOIRE pour WebUi)
 
@@ -56,6 +58,39 @@ sudo apt update
 sudo apt install python3.10 python3.10-venv python3.10-dev
 ```
 
+  ## STORY BORD
+
+
+
+  ## TIMELINE D'UNE SESSION
+
+t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
+
+t=4s      Détection stable -> Activation du vérin vers position HAUTE.
+          Affichage : "Déplacement caméra en cours..."
+
+t=4-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
+          Affichage : Retour vidéo Live (Vue Plongée).
+
+t=10s     Utilisateur fait signe V (✌️) pendant 2s.
+
+t=12s     Validation --> Countdown "3-2-1" -> Capture Photo.
+
+t=15s     Envoi vers Stable Diffusion XL.
+
+t=45s     Réception Image IA.
+          Options : Pouce (👍) pour imprimer ou Poing (✊) pour changer de hauteur.
+
+ ---------------------------------------  SI IMPRESSION  --------------------------------------------
+
+t=47s    Envoi CUPS: input.png + IA1.png + IA2.png
+
+t=50-60s  Impression physique (~8s par page A6)
+
+t=60s     Etat: "waiting_victory" (pret nouvelle session)
+
+
+
   ## PHOTO BOOTH IA - ARCHITECTURE SYSTEME
 
                           COUCHE MATERIELLE
@@ -67,7 +102,38 @@ sudo apt install python3.10 python3.10-venv python3.10-dev
                                 |
                     SYSTEME D'EXPLOITATION (Linux/Windows)
           Drivers: V4L2 (webcam), CUPS (imprimante), GPIO/Serial (Vérin)
-                    
+
+
+##  ARCHITECTURE SIMPLIFIEE
+
+<pre>
+[Signe Main]
+            |
+            v
+        [Webcam] <-----------+ 
+            |                |
+         (frame)             | [Ajustement Physique]
+            |                | (Position 1, 2 ou 3)
+            v                |
+     [photobooth.py] --------+----[Vérin Électrique]
+            |          (Signal GPIO/USB)
+            |
+            | HTTP POST (Base64)
+            v
+      [Automatic1111]
+            | Port 7860
+            | SDXL + ControlNet
+            | GPU: 9-12 GB VRAM
+            v
+     [photobooth.py]
+            |
+      +-----+-----+
+      |           |
+      v           v
+   [Écran]   [Imprimante]
+</pre>
+
+================================================================================                    
 
  ## GUIDE DES SIGNES 
 
@@ -213,6 +279,7 @@ Impression :  👍
 
   L'algorithme de détection a été mis à jour pour analyser les Hand Landmarks (21 points). Un doigt est compté comme "levé" si l'ordonnée y de l'extrémité du doigt (Landmark 8, 12, 16, 20) est inférieure à celle de l'articulation précédente.
 
+================================================================================
 
   ## APPLICATION PHOTOBOOTH (photobooth.py)
 
@@ -300,9 +367,9 @@ lp -d HP_Color_LaserJet_5700_USB
 CUPS Daemon --> USB --> HP LaserJet --> Photos imprimees
 
 ###               GESTION DE L'ACTIONNEUR (VÉRIN LINEAIRE)
-================================================================================
-                  CONTROLE PHYSIQUE : VÉRIN 1 DDL
-================================================================================
+
+                       CONTROLE PHYSIQUE : VÉRIN 1 DDL
+
 
 Interface: GPIO (Raspberry Pi) ou Serial (Arduino/USB)
 Protocole: PWM ou High/Low Signal
@@ -317,10 +384,10 @@ SECURITÉ:
 - Timeout de mouvement : 8 secondes max.
 
 ###               STABLE DIFFUSION WEBUI (Automatic1111)
-================================================================================
+
                 STABLE DIFFUSION WEBUI (Automatic1111)
                     Port: 127.0.0.1:7860 - API REST
-================================================================================
+
 
 Endpoint: POST /sdapi/v1/img2img
 
@@ -406,35 +473,6 @@ VRAM: 9-12 GB                       VRAM: 0 GB
 </pre>
 
 
-  ## TIMELINE D'UNE SESSION
-
-t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
-
-t=4s      Détection stable -> Activation du vérin vers position HAUTE.
-          Affichage : "Déplacement caméra en cours..."
-
-t=4-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
-          Affichage : Retour vidéo Live (Vue Plongée).
-
-t=10s     Utilisateur fait signe V (✌️) pendant 2s.
-
-t=12s     Validation --> Countdown "3-2-1" -> Capture Photo.
-
-t=15s     Envoi vers Stable Diffusion XL.
-
-t=45s     Réception Image IA.
-          Options : Pouce (👍) pour imprimer ou Poing (✊) pour changer de hauteur.
-
- ---------------------------------------  SI IMPRESSION  --------------------------------------------
-
-t=47s    Envoi CUPS: input.png + IA1.png + IA2.png
-
-t=50-60s  Impression physique (~8s par page A6)
-
-t=60s     Etat: "waiting_victory" (pret nouvelle session)
-
-
-
 ## DEPENDANCES CLES
 
 <pre>
@@ -454,33 +492,140 @@ Partagés (système):
 +-- NVIDIA Driver 525+
 </pre>
 
+================================================================================
 
-## RESUME ARCHITECTURE SIMPLIFIEE
+  ## Code & Logique logicielle
 
-<pre>
-[Signe Main]
-            |
-            v
-        [Webcam] <-----------+ 
-            |                |
-         (frame)             | [Ajustement Physique]
-            |                | (Position 1, 2 ou 3)
-            v                |
-     [photobooth.py] --------+----[Vérin Électrique]
-            |          (Signal GPIO/USB)
-            |
-            | HTTP POST (Base64)
-            v
-      [Automatic1111]
-            | Port 7860
-            | SDXL + ControlNet
-            | GPU: 9-12 GB VRAM
-            v
-     [photobooth.py]
-            |
-      +-----+-----+
-      |           |
-      v           v
-   [Écran]   [Imprimante]
-</pre>
+Le script photobooth.py est basé sur une Machine à États (Finite State Machine) qui synchronise la vision par ordinateur, l'IA générative et l'impression physique.
+
+  ### Méthodes principales du projet
+|         Méthode           |                                    Rôle                                             |
+|---------------------------|-------------------------------------------------------------------------------------|
+|**detect_gestures(frame)** |Utilise MediaPipe Hands pour extraire les coordonnées (Landmarks)                    |
+|                           |et identifier les formes (Signe V ou Pouce).                                         |
+|**check_stable_gesture()** |Gère la persistance temporelle. Empêche les faux positifs en vérifiant que le geste  |
+|                           |est maintenu durant GESTURE_HOLD_DURATION.                                           |
+|**call_api_images()**      |"Prépare le payload JSON (Prompt, ControlNet, Image Base64)                          |
+|                           |et communique avec le serveur Stable Diffusion XL."                                  |
+|**apply_logo_overlay()**   |Fusionne le template PNG transparent (Logo CPE)                                      |
+|                           |sur les images capturées et générées.                                                |
+|**countdown_flash_live()** |Gère l'animation visuelle (overlay bleu et texte 3-2-1)                              |
+|                           |sur le flux webcam avant la capture.                                                 |
+|**print_images()**         |Automatise l'envoi des fichiers vers le CUPS                                         |
+|                           |pour l'impression physique.                                                          |
+
+  ### Contrôle du Vérin (Actionneur)
+Pour intégrer le vérin motorisé à l'architecture, il faut ajouter un module de communication (généralement Série/USB ou GPIO) et définir trois méthodes de contrôle spécifiques.
+
+#### Méthodes à implémenter :
+
+```Python
+def move_actuator(position):
+    """
+    Envoie l'ordre physique au vérin via Serial ou GPIO.
+    Positions : 1 (Bas), 2 (Milieu), 3 (Haut)
+    """
+    if position == 1:
+        # Code pour rétracter le vérin (Contre-plongée)
+        send_serial_command("MOVE_POS_1") 
+    elif position == 2:
+        # Code pour position médiane (Vue normale)
+        send_serial_command("MOVE_POS_2")
+    elif position == 3:
+        # Code pour extension maximale (Plongée)
+        send_serial_command("MOVE_POS_3")
+
+def detect_finger_count(hand_landmarks):
+    """
+    Analyse les points MediaPipe pour compter précisément les doigts levés.
+    Retourne un entier (1, 2 ou 3).
+    """
+    # Comparaison de l'extrémité des doigts (8, 12, 16) 
+    # par rapport aux articulations (6, 10, 14)
+    fingers = []
+    # Logique de calcul y_tip < y_joint
+    return sum(fingers)
+
+def wait_for_actuator_stability():
+    """
+    Bloque le flux caméra ou affiche une icône de chargement 
+    pendant que le vérin est en mouvement pour éviter le flou de bougé.
+    """
+    time.sleep(ACTUATOR_TRAVEL_TIME) # Ou lecture du capteur de fin de course
+```
+
+  Intégration dans la boucle principale (main)
+
+Le code passera par un nouvel état initial SETUP_HEIGHT :
+- Phase de Scan : La méthode detect_finger_count identifie si l'utilisateur lève 1, 2 ou 3 doigts.
+- Phase d'Action : move_actuator est appelée pour déplacer la webcam.
+- Phase de Transition : Une fois le vérin stable, le système bascule vers l'état waiting_victory pour lancer la session    photo.
+
+
+
+## Problème éventuel du projet 
+
+### Problèmes Mécaniques et Physiques
+
+Vibrations et Flou : Le mouvement du vérin peut faire trembler le support de la caméra. Si une photo est prise juste après le mouvement, elle risque d'être floue, ce qui ruinera la détection OpenPose de Stable Diffusion.
+
+Gestion des Câbles (Cable Management) : La webcam est reliée par un câble USB. Avec les mouvements répétés de montée/descente, le câble peut se tendre, se coincer dans le mécanisme ou finir par s'arracher.
+
+Inertie et Précision : Selon la qualité du vérin, l'arrêt peut ne pas être instantané. La position "Milieu" peut dériver avec le temps (phénomène de glissement).
+
+### Problèmes de Sécurité (Hardware)
+
+Échauffement du Contrôleur : Un vérin consomme beaucoup de courant lors du démarrage. Si le driver (L298N ou relais) n'est pas bien refroidi, il peut griller.
+
+Points de Pincement : Le vérin crée une zone de cisaillement. Il faut s'assurer qu'aucun utilisateur (surtout des enfants) ne puisse mettre ses doigts dans le mécanisme pendant le réglage.
+
+Absence de Capteurs de Fin de Course : Si le code envoie l'ordre de descendre alors que le vérin est déjà en bas, le moteur peut forcer, chauffer et réduire sa durée de vie.
+
+### Problèmes d'Interface et d'UX (Expérience Utilisateur)
+
+Latence de Réaction : Un vérin est lent (souvent quelques centimètres par seconde). L'utilisateur pourrait croire que le système ne fonctionne pas s'il n'y a pas de retour visuel immédiat ("Mouvement en cours...") sur l'écran.
+
+Conflits de Gestes : * Faire 2 doigts pour choisir la "Hauteur Milieu" déclenche-t-il immédiatement la photo ?
+
+Il faut une séparation stricte entre le Menu Réglage et le Menu Capture pour éviter que la caméra ne bouge pendant que l'utilisateur pose.
+
+Sortie de Cadre : En changeant de hauteur, l'utilisateur peut se retrouver hors-champ (trop haut ou trop bas). Le système doit alors l'inviter à reculer ou s'avancer.
+
+### Problèmes Logiciels (Code)
+
+Blocage du Thread (Freezing) : Si la fonction move_actuator() est "bloquante" (attend que le vérin finisse), l'affichage de la webcam va se figer. Il faut utiliser des threads séparés ou une approche asynchrone.
+
+Bruit dans le comptage de doigts : MediaPipe peut hésiter entre 2 et 3 doigts si la main tremble. Cela pourrait faire "pomper" le vérin (monter/descendre sans arrêt). Il faut un système de verrouillage (une fois la position choisie, on ne peut plus en changer sans un geste de reset).
+
+
+
+## Amélioration de l'IA et du Rendu (Software)
+
+Multi-ControlNet : Actuellement, vous utilisez OpenPose. Ajouter Canny ou Depth en parallèle permettrait de conserver non seulement la pose de l'utilisateur, mais aussi la structure précise des objets qu'il tient (ex: un accessoire de photobooth) ou les détails de l'arrière-plan.
+
+Inpainting Automatique : Utiliser l'IA pour corriger uniquement les visages ou les mains après la génération (souvent les points faibles de SDXL), afin de garantir un résultat esthétique parfait à chaque impression.
+
+Styles Dynamiques : Permettre à l'utilisateur de choisir son univers via un geste (ex: 4 doigts pour un style "Cyberpunk", 5 doigts pour "Peinture à l'huile") au lieu de rester figé sur la "Ligne Claire".
+
+### Évolution Mécanique et Hardware
+
+Asservissement par le Regard (Auto-Framing) : Au lieu de positions fixes (Haut/Milieu/Bas), le vérin pourrait s'ajuster dynamiquement pour que le visage de l'utilisateur soit toujours parfaitement centré au milieu de l'image (via les coordonnées du nez détectées par MediaPipe).
+
+Ajout d'un 2ème Axe (Pan/Tilt) : Rajouter un moteur de rotation horizontale pour que la caméra puisse suivre l'utilisateur s'il se déplace latéralement dans la pièce.
+
+Éclairage Adaptatif (Ring Light Smart) : Connecter une bague LED dont l'intensité et la température de couleur (chaud/froid) changent en fonction du style IA choisi ou de la luminosité ambiante détectée.
+
+### Interaction et Expérience Utilisateur (UX)
+
+Réalité Augmentée "Ghost" : Afficher sur l'écran un contour transparent (pose de référence) que l'utilisateur doit essayer d'imiter pour obtenir la meilleure génération IA possible.
+
+Envoi Cloud / QR Code : Au lieu de simplement imprimer, générer un QR Code unique sur l'écran à la fin du processus pour que l'utilisateur puisse télécharger sa photo directement sur son smartphone.
+
+Audio-Réactivité : Ajouter des instructions vocales synthétisées ("Levez deux doigts pour monter la caméra") ou des sons déclenchés par les mouvements du vérin pour rendre la machine plus "vivante".
+
+### Robustesse et Déploiement
+
+Mode "Kiosque" Sécurisé : Verrouiller le système d'exploitation pour que l'utilisateur ne puisse pas fermer la fenêtre OpenCV ou accéder au bureau Windows/Linux.
+
+Gestion de File d'Attente : Si beaucoup de gens utilisent le photobooth, implémenter un système qui traite les images en arrière-plan pendant que la personne suivante se place, afin d'optimiser le débit du GPU.
 
