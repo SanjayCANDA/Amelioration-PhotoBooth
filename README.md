@@ -85,6 +85,45 @@ Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
                                     HTTP POST Request (JSON)
 </pre>
 
+  ### MODULE 4: POST-TRAITEMENT
+<pre>
+Decodage Base64 --> Application Logo CPE --> Sauvegarde
+    (PNG)           (Overlay RGBA)           result_API_1111/
+                                             timestamp_IA1.png
+                                             timestamp_IA2.png
+</pre>
+
+  ### MODULE 5: AFFICHAGE (OpenCV)
+
+Ecran 3840x1080 (Dual Monitor)
+
+Fenetre 1: "Webcam" (1440x810)
+- Flux live 30 FPS
+- Overlay gestes (cercles + barres progression)
+- Messages etat systeme
+
+Fenetre 2: "Image StableDiffusion" (1440x1620)
+- Affiche derniere image IA
+- Mise a jour apres generation
+
+  ### MODULE 6: IMPRESSION
+
+Files d'impression:
+1. timestamp_input.png  <---- Photo originale + logo
+2. timestamp_IA1.png    <---- Variation IA #1 + logo
+3. timestamp_IA2.png    <---- Variation IA #2 + logo
+
+Commande CUPS:
+lp -d HP_Color_LaserJet_5700_USB
+   -o media=A6
+   -o InputSlot=Tray2
+   -o mediaType=HP-Brochure-Glossy-200g
+   -o orientation-requested=4
+   -o print-quality=5
+   image.png
+
+CUPS Daemon --> USB --> HP LaserJet --> Photos imprimees
+
   ## TIMELINE D'UNE SESSION
 
 t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
@@ -137,7 +176,7 @@ Impression :  👍  (Pouce levé)
 
   L'algorithme de détection a été mis à jour pour analyser les Hand Landmarks (21 points). Un doigt est compté comme "levé" si l'ordonnée y de l'extrémité du doigt (Landmark 8, 12, 16, 20) est inférieure à celle de l'articulation précédente.
 
+
   ## Dépendances Additionnelles
 RPI.GPIO ou pyserial (selon le contrôleur du vérin) ✅
-
 MediaPipe Hand Landmarker (pour le comptage précis des doigts) ✅
