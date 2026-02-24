@@ -269,7 +269,18 @@ Retour au menu :  ✊
 </pre>
 
 Impression :  👍  (Pouce levé)
-
+<pre>
+        # Poing fermé
+                  __
+                /   |
+               /   /
+              /   /
+      ______-'    \______
+                  \______\
+                  \_______\
+      ________     \______\
+              \____ \____/                          
+</pre>
 
   ### NOTE TECHNIQUE : Comptage de doigts
 
