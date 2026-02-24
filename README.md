@@ -179,13 +179,13 @@ Impression :  👍
   ### MODULE 1: GESTION DU VÉRIN
 
 Le système utilise le comptage de doigts pour définir la hauteur physique avant la capture.
-
+<pre>
 | Position    |      Geste Signe	      |            Angle de vue       |
 |-------------|-------------------------|-------------------------------|
 |**BAS**      |    1 Doigt levé		      |    Contre-plongée (Low Angle) |
 |**MILIEU**	  |    2 Doigts levés  	    |    Hauteur humaine (Eye Level)|
 |**HAUT**	    |    3 Doigts levés	      |    Plongée (High Angle)       |
-
+</pre>
 
   ### MODULE 2: MACHINE A ETATS
 
