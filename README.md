@@ -182,7 +182,7 @@ Menu 1 : Réglage de la Hauteur (Vérin)
 
 Position Basse :  ☝
 <pre>
-    # 1 doigt
+          # 1 doigt
         __
        /  |
       |   |
@@ -196,15 +196,56 @@ Position Basse :  ☝
  ____|  |   |   |  |  |
 /  __ \  \__/\__/\_/  /
  /  |__|             /
- |                /
+ |                  /
   \___             /
       \           |   
        |          |
 </pre>
 
-Position Milieu :  ✌  (2 doigts)
+Position Milieu :  ✌  
+<pre>
+          # 2 doigts
+        __       __ 
+       /  |     /  /
+      |   |    /  /
+      |   |   /  /
+      |   |  /  / 
+      |    \/  /____  
+      |             \
+      /      /   /   \ 
+     |      |   |  |  \
+     |      |   |  |  |
+ ____|      |   |  |  |
+/  __ \      \_/ \_/   /
+ /  |__|             /
+ |                  /
+  \___             /
+      \           |   
+       |          |
+</pre>
 
-Position Haute :  🖖  (3 doigts)
+
+Position Haute :  🖖
+<pre>
+              # 3 doigts
+            __       __ 
+          /  |     /  /
+          |   |    /  /
+          |   |   /  /
+          |   |  /  / 
+          |    \/  /____  
+   _      |             \
+ /  |     \      /   /   \ 
+|   |      |    |   |  |  \
+|    \_    |    |   |  |  |
+ \     \__/     |   |  |  |
+  \              \_/ \_/  /
+    \                     /
+     \                  /
+      \__              /
+          \           |   
+           |          |
+</pre>
 
 Menu 2 : Capture & Navigation
 
