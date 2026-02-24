@@ -268,9 +268,9 @@ Retour au menu :  ✊
        |          |
 </pre>
 
-Impression :  👍  (Pouce levé)
+Impression :  👍
 <pre>
-        # Poing fermé
+        # Pouce levé
                   __
                 /   |
                /   /
