@@ -1,84 +1,131 @@
-Projet : Caméra Robotisée à Commande Gestuelle (Vérin 1 DDL)
-  Description du Projet
-Ce projet consiste en la création d'un système de prise de vue intelligent capable de s'ajuster physiquement en hauteur grâce à un vérin électrique (1 degré de liberté). L'utilisateur interagit avec le système sans contact, uniquement par la reconnaissance de gestes via une caméra de traitement d'image.
+  # Photo Booth IA avec Ajustement Dynamique - MDM 2026
+Photo booth intelligent avec contrôle motorisé de la hauteur par gestes, génération d'images par IA utilisant Stable Diffusion XL et détection de gestes en temps réel.
 
-Le système propose trois angles de vue prédéfinis (Plongée, Normal, Contre-plongée) pour offrir des perspectives artistiques variées sans manipulation manuelle de l'équipement.
+  ## Description
+Ce projet crée un photobooth interactif et automatisé qui :
 
-  But Global
-Offrir une interface de capture photo mains-libres, intuitive et automatisée, permettant de passer d'une configuration de menu à un retour vidéo en temps réel, tout en ajustant la position physique de la caméra selon le choix de l'utilisateur.
+  - Ajuste la hauteur physique de la caméra via un vérin électrique (3 positions : Bas, Milieu, Haut).
 
-  Détails des Composants
-1. Système de Vision (IA)
+  - Capture des photos via webcam avec détection de gestes précise (comptage de doigts).
 
-Moteur de détection : Utilisation de MediaPipe Hands (ou OpenCV) pour le suivi des points de repère de la main (Landmarks).
+  - Génère des images stylisées "Comic Book Ligne Claire" via SDXL + ControlNet.
 
-Logique de comptage : Analyse de la position des extrémités des doigts par rapport aux articulations pour déterminer le nombre de doigts levés.
+  - Imprime les résultats au format A6 glacé.
 
-Filtrage : Temporisation de 0.5s pour valider un geste et éviter les déclenchements accidentels.
+  ### Style graphique
+- **Bande dessinée européenne** (ligne claire)
+- Traits nets et épurés, aplats de couleurs avec dégradés
+- Scènes futuristes avec interfaces holographiques cyan/orange
+- Arrière-plans technologiques complexes
 
-2. Système Mécanique (Le Vérin)
+  ## Prérequis matériel
 
-Actionneur : Vérin électrique linéaire piloté par un contrôleur (type L298N ou relais).
+|   Composant    |                 Spécification                      |
+|----------------|----------------------------------------------------|
+| **Vérin**      | Vérin électrique linéaire (1 DDL)                  |
+| **GPU**        | NVIDIA avec CUDA (RTX 2060+ recommandé)            |
+| **Webcam**     | Résolution 720p minimum                            |
+| **Écran**      | 3840×1080 (dual monitor) recommandé                |
+| **Imprimante** | HP Color LaserJet 5700 + papier A6 glacé 200g      |
+| **RAM**        | 16 GB minimum (32 GB recommandé pour SDXL)         |
 
-Positions pré-réglées :
 
-BAS : Extension minimale (Contre-plongée).
 
-MILIEU : Extension 50% (Hauteur humaine / Normal).
+                          COUCHE MATERIELLE
+                          -----------------
+        Webcam USB          GPU NVIDIA          Vérin + Contrôleur
+        1280x720            CUDA/cuDNN          Positionnement 1 DDL
+            |                   |                   |
+            +-------------------+-------------------+
+                                |
+                    SYSTEME D'EXPLOITATION (Linux/Windows)
+          Drivers: V4L2 (webcam), CUPS (imprimante), GPIO/Serial (Vérin)
+                    
 
-HAUT : Extension maximale (Plongée).
+  ## APPLICATION PHOTOBOOTH (photobooth.py)
 
-  Interface Utilisateur & Navigation
-Le système fonctionne sur une machine à états avec deux menus distincts :
+  ### MODULE 1: GESTION DU VÉRIN (NOUVEAU)
 
-Étape 1 : Menu de Configuration (Positionnement)
+Le système utilise le comptage de doigts pour définir la hauteur physique avant la capture.
 
-L'écran affiche les instructions de réglage. Le retour caméra n'est pas encore plein écran.
+ Position	    |      Geste Signe	      |            Angle de vue
+              |                         |
+**BAS**.      |    1 Doigt levé		      |    Contre-plongée (Low Angle)
+**MILIEU**	  |    2 Doigts levés  	    |    Hauteur humaine (Eye Level)
+**HAUT**	    |    3 Doigts levés	      |    Plongée (High Angle)
 
-Geste	Signe	Action du Vérin	Résultat Photo
-1 Doigt	☝️	Descente en position BAS	Contre-plongée
-2 Doigts	✌️	Arrêt à MI-HAUTEUR	Vue Normale
-3 Doigts	🖖	Montée en position HAUTE	Vue en Plongée
-Une fois le choix détecté, le vérin s'active. Dès que la position est atteinte, le système passe automatiquement au Menu 2.
 
-Étape 2 : Menu de Capture (Prise de vue)
+  ### MODULE 2: MACHINE A ETATS (Mise à jour)
 
-L'écran affiche le retour vidéo direct (Live View) de la caméra positionnée.
+Plaintext
+[STATE: SETUP_HEIGHT] --(1, 2 ou 3 doigts)--> [ACTION: MOVE_ACTUATOR]
+       ^                                              |
+       |                                              v
+[STATE: WAITING_CAPTURE] <------------------ [POSITION_REACHED]
+       |
+       +--(2 doigts 2s)--> [COUNTDOWN] --(Capture)--> [PROCESSING_IA]
+       |
+       +--(poing fermé 2s)--> [RETOUR SETUP_HEIGHT]
 
-Geste	Signe	Action
-2 Doigts	✌️	Prendre la Photo (Déclenchement après décompte 3s)
-Poing Fermé	✊	Retour au Menu 1 (Changement de position)
-🖐️ Guide des Signes (Unicode)
-Voici les commandes visuelles reconnues par l'algorithme :
+[STATE: READY_PRINT]
+       |
+       +--(pouce 2s)--> [PRINTING]
+       +--(V-sign 2s)--> [RESET TO SETUP_HEIGHT]
 
-Sélection Position Basse / 1 doigt :
- |
- ☝ 
 
-Sélection Position Milieu & Déclencheur / 2 doigts :
-|  |
- ✌  
+  ## TIMELINE D'UNE SESSION
 
-Sélection Position Haute / 3 doigts :
-|  |  |
-  🖖   
+t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
 
-Retour au menu précédent / Poing fermé :
- [ ] 
-  ✊  
-  
-  Installation & Lancement (Exemple Python)
-Prérequis :
+t=1s      Détection stable -> Activation du vérin vers position HAUTE.
+          Affichage : "Déplacement caméra en cours..."
 
-Python 3.x
+t=5-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
+          Affichage : Retour vidéo Live (Vue Plongée).
 
-opencv-python
+t=10s     Utilisateur fait signe V (✌️) pendant 2s.
 
-mediapipe
+t=12s     Validation --> Countdown "3-2-1" -> Capture Photo.
 
-Bibliothèque de contrôle GPIO (selon votre matériel : RPi.GPIO ou Serial pour Arduino).
+t=15s     Envoi vers Stable Diffusion XL.
 
-Lancement :
+t=45s     Réception Image IA.
+          Options : Pouce (👍) pour imprimer ou Poing (✊) pour changer de hauteur.
 
-Bash
-python main_camera_control.py
+                            [SI IMPRESSION]
+
+t=47s    Envoi CUPS: input.png + IA1.png + IA2.png
+
+t=50-60s  Impression physique (~8s par page A6)
+
+t=60s     Etat: "waiting_victory" (pret nouvelle session)
+
+
+
+ ## GUIDE DES SIGNES 
+
+Menu 1 : Réglage de la Hauteur (Vérin)
+
+Position Basse :  ☝  (1 doigt)
+
+Position Milieu :  ✌  (2 doigts)
+
+Position Haute :  🖖  (3 doigts)
+
+Menu 2 : Capture & Navigation
+
+Prendre Photo :  ✌  (2 doigts maintenus)
+
+Retour au menu :  ✊  (Poing fermé)
+
+Impression :  👍  (Pouce levé)
+
+
+  ### NOTE TECHNIQUE : Comptage de doigts
+
+  L'algorithme de détection a été mis à jour pour analyser les Hand Landmarks (21 points). Un doigt est compté comme "levé" si l'ordonnée y de l'extrémité du doigt (Landmark 8, 12, 16, 20) est inférieure à celle de l'articulation précédente.
+
+  ## Dépendances Additionnelles
+RPI.GPIO ou pyserial (selon le contrôleur du vérin) ✅
+
+MediaPipe Hand Landmarker (pour le comptage précis des doigts) ✅
