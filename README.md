@@ -207,6 +207,7 @@ Prendre Photo :  ✌  (2 doigts maintenus)
 Retour au menu :  ✊  (Poing fermé)
 
 <pre>
+        # Poing fermé
         __  __ __ __
       /              \
      /    /   /   /   \ 
