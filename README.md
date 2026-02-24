@@ -44,7 +44,7 @@ Position Milieu : X′cm (Hauteur d'œil).
 Position Haute : X′′cm (Plongée).
 
 
-  ### PPython 3.10 (OBLIGATOIRE pour WebUi)
+  ### Python 3.10 (OBLIGATOIRE pour WebUi)
 
 Stable Diffusion WebUI nécessite **Python 3.10.x** (pas 3.11, 3.12 ou supérieur) [web:1][web:8].
 
@@ -138,6 +138,19 @@ Position Haute :  🖖
       \__              /
           \           |   
            |          |
+</pre>
+
+#### Résumé des positions :
+<pre>
+POSITION BASSE          POSITION MILIEU           POSITION HAUTE
+   (1 DOIGT)                (2 DOIGTS)               (3 DOIGTS)
+      ☝️                       ✌️                       🖖
+   [Vérin 10%]             [Vérin 50%]              [Vérin 90%]
+       +                         +                        +
+       |                         |                        | 
+   .---'---.                     |                        |
+                             .---'---.                    |                      
+                                                      .---'---.
 </pre>
 
 ### Menu 2 : Capture & Navigation
@@ -470,3 +483,4 @@ Partagés (système):
       v           v
    [Écran]   [Imprimante]
 </pre>
+
