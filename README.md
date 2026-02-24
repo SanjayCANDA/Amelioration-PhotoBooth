@@ -46,140 +46,6 @@ Ce projet crée un photobooth interactif et automatisé qui :
 
 ### Menu 1 : Réglage de la Hauteur (Vérin)
 
-Position Basse :  ☝  (1 doigt)
-
-Position Milieu :  ✌  (2 doigts)
-
-Position Haute :  🖖  (3 doigts)
-
-### Menu 2 : Capture & Navigation
-
-Prendre Photo :  ✌  (2 doigts maintenus)
-
-Retour au menu :  ✊  (Poing fermé)
-
-Impression :  👍  (Pouce levé)
-
-
-
-  ## APPLICATION PHOTOBOOTH (photobooth.py)
-
-  ### MODULE 1: GESTION DU VÉRIN
-
-Le système utilise le comptage de doigts pour définir la hauteur physique avant la capture.
-
- Position	    |      Geste Signe	      |            Angle de vue
-              |                         |
-**BAS**.      |    1 Doigt levé		      |    Contre-plongée (Low Angle)
-**MILIEU**	  |    2 Doigts levés  	    |    Hauteur humaine (Eye Level)
-**HAUT**	    |    3 Doigts levés	      |    Plongée (High Angle)
-
-
-  ### MODULE 2: MACHINE A ETATS
-
-<pre>
-[STATE: SETUP_HEIGHT] --(1, 2 ou 3 doigts)--> [ACTION: MOVE_ACTUATOR]
-       ^                                              |
-       |                                              v
-[STATE: WAITING_CAPTURE] <------------------ [POSITION_REACHED]
-       |
-       +--(2 doigts 2s)--> [COUNTDOWN] --(Capture)--> [PROCESSING_IA]
-       |
-       +--(poing fermé 2s)--> [RETOUR SETUP_HEIGHT]
-
-[STATE: READY_PRINT]
-       |
-       +--(pouce 2s)--> [PRINTING]
-       +--(V-sign 2s)--> [RESET TO SETUP_HEIGHT]
-</pre>
-      
-
-  ### MODULE 3: PREPARATION IMAGE
-<pre>
-Frame capturee (numpy array BGR 1280x720)
-    |
-    v
-Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
-                                                |
-                                                v
-                                    HTTP POST Request (JSON)
-</pre>
-
-
-  ### MODULE 4: POST-TRAITEMENT
-<pre>
-Decodage Base64 --> Application Logo CPE --> Sauvegarde
-    (PNG)           (Overlay RGBA)           result_API_1111/
-                                             timestamp_IA1.png
-                                             timestamp_IA2.png
-</pre>
-
-
-  ### MODULE 5: AFFICHAGE (OpenCV)
-
-Ecran 3840x1080 (Dual Monitor)
-
-Fenetre 1: "Webcam" (1440x810)
-- Flux live 30 FPS
-- Overlay gestes (cercles + barres progression)
-- Messages etat systeme
-
-Fenetre 2: "Image StableDiffusion" (1440x1620)
-- Affiche derniere image IA
-- Mise a jour apres generation
-
-
-  ### MODULE 6: IMPRESSION
-
-Files d'impression:
-1. timestamp_input.png  <---- Photo originale + logo
-2. timestamp_IA1.png    <---- Variation IA #1 + logo
-3. timestamp_IA2.png    <---- Variation IA #2 + logo
-
-Commande CUPS:
-lp -d HP_Color_LaserJet_5700_USB
-   -o media=A6
-   -o InputSlot=Tray2
-   -o mediaType=HP-Brochure-Glossy-200g
-   -o orientation-requested=4
-   -o print-quality=5
-   image.png
-
-CUPS Daemon --> USB --> HP LaserJet --> Photos imprimees
-
-  ## TIMELINE D'UNE SESSION
-
-t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
-
-t=1s      Détection stable -> Activation du vérin vers position HAUTE.
-          Affichage : "Déplacement caméra en cours..."
-
-t=5-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
-          Affichage : Retour vidéo Live (Vue Plongée).
-
-t=10s     Utilisateur fait signe V (✌️) pendant 2s.
-
-t=12s     Validation --> Countdown "3-2-1" -> Capture Photo.
-
-t=15s     Envoi vers Stable Diffusion XL.
-
-t=45s     Réception Image IA.
-          Options : Pouce (👍) pour imprimer ou Poing (✊) pour changer de hauteur.
-
- ---------------------------------------  SI IMPRESSION  --------------------------------------------
-
-t=47s    Envoi CUPS: input.png + IA1.png + IA2.png
-
-t=50-60s  Impression physique (~8s par page A6)
-
-t=60s     Etat: "waiting_victory" (pret nouvelle session)
-
-
-
- ## GUIDE DES SIGNES 
-
-Menu 1 : Réglage de la Hauteur (Vérin)
-
 Position Basse :  ☝
 <pre>
           # 1 doigt
@@ -247,9 +113,29 @@ Position Haute :  🖖
            |          |
 </pre>
 
-Menu 2 : Capture & Navigation
+### Menu 2 : Capture & Navigation
 
-Prendre Photo :  ✌  (2 doigts maintenus)
+Prendre Photo :  ✌
+<pre>
+          # 2 doigts
+        __       __ 
+       /  |     /  /
+      |   |    /  /
+      |   |   /  /
+      |   |  /  / 
+      |    \/  /____  
+      |             \
+      /      /   /   \ 
+     |      |   |  |  \
+     |      |   |  |  |
+ ____|      |   |  |  |
+/  __ \      \_/ \_/   /
+ /  |__|             /
+ |                  /
+  \___             /
+      \           |   
+       |          |
+</pre>
 
 Retour au menu :  ✊ 
 <pre>
@@ -282,11 +168,223 @@ Impression :  👍
               \____ \____/                          
 </pre>
 
+
   ### NOTE TECHNIQUE : Comptage de doigts
 
   L'algorithme de détection a été mis à jour pour analyser les Hand Landmarks (21 points). Un doigt est compté comme "levé" si l'ordonnée y de l'extrémité du doigt (Landmark 8, 12, 16, 20) est inférieure à celle de l'articulation précédente.
 
 
-  ## Dépendances Additionnelles
-RPI.GPIO ou pyserial (selon le contrôleur du vérin) ✅
-MediaPipe Hand Landmarker (pour le comptage précis des doigts) ✅
+  ## APPLICATION PHOTOBOOTH (photobooth.py)
+
+  ### MODULE 1: GESTION DU VÉRIN
+
+Le système utilise le comptage de doigts pour définir la hauteur physique avant la capture.
+
+ Position	    |      Geste Signe	      |            Angle de vue
+              |                         |
+**BAS**.      |    1 Doigt levé		      |    Contre-plongée (Low Angle)
+**MILIEU**	  |    2 Doigts levés  	    |    Hauteur humaine (Eye Level)
+**HAUT**	    |    3 Doigts levés	      |    Plongée (High Angle)
+
+
+  ### MODULE 2: MACHINE A ETATS
+
+<pre>
+[STATE: SETUP_HEIGHT] --(1, 2 ou 3 doigts)--> [ACTION: MOVE_ACTUATOR]
+       ^                                              |
+       |                                              v
+[STATE: WAITING_CAPTURE] <------------------ [POSITION_REACHED]
+       |
+       +--(2 doigts 2s)--> [COUNTDOWN] --(Capture)--> [PROCESSING_IA]
+       |
+       +--(poing fermé 2s)--> [RETOUR SETUP_HEIGHT]
+
+[STATE: READY_PRINT]
+       |
+       +--(pouce 2s)--> [PRINTING]
+       +--(V-sign 2s)--> [RESET TO SETUP_HEIGHT]
+</pre>
+      
+
+  ### MODULE 3: PREPARATION IMAGE
+<pre>
+Frame capturee (numpy array BGR 1280x720)
+    |
+    v
+Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
+                                                |
+                                                v
+                                    HTTP POST Request (JSON)
+</pre>
+
+  ## STABLE DIFFUSION WEBUI
+
+  ### MODULE 4: POST-TRAITEMENT
+<pre>
+Decodage Base64 --> Application Logo CPE --> Sauvegarde
+    (PNG)           (Overlay RGBA)           result_API_1111/
+                                             timestamp_IA1.png
+                                             timestamp_IA2.png
+</pre>
+
+
+  ### MODULE 5: AFFICHAGE (OpenCV)
+
+Ecran 3840x1080 (Dual Monitor)
+
+Fenetre 1: "Webcam" (1440x810)
+- Flux live 30 FPS
+- Overlay gestes (cercles + barres progression)
+- Messages etat systeme
+
+Fenetre 2: "Image StableDiffusion" (1440x1620)
+- Affiche derniere image IA
+- Mise a jour apres generation
+
+
+  ### MODULE 6: IMPRESSION
+
+Files d'impression:
+1. timestamp_input.png  <---- Photo originale + logo
+2. timestamp_IA1.png    <---- Variation IA #1 + logo
+3. timestamp_IA2.png    <---- Variation IA #2 + logo
+
+Commande CUPS:
+lp -d HP_Color_LaserJet_5700_USB
+   -o media=A6
+   -o InputSlot=Tray2
+   -o mediaType=HP-Brochure-Glossy-200g
+   -o orientation-requested=4
+   -o print-quality=5
+   image.png
+
+CUPS Daemon --> USB --> HP LaserJet --> Photos imprimees
+
+
+
+  ### FLUX DE DONNEES
+
+<pre>
+Webcam --> photobooth.py --> Automatic1111 --> photobooth.py
+   |            |                  |                  |
+   |            |                  |                  |
+Frame BGR   JSON+Base64      Generation IA      Decode+Logo
+1280x720    POST /img2img    ~20-30 sec         Sauvegarde
+                             9-12 GB VRAM
+                                                Display + Print
+</pre>
+
+
+  ### COMMUNICATION INTER-PROCESSUS
+
+<pre>
+TERMINAL 1                          TERMINAL 2
+bash launch_webui.sh                python photobooth.py
+
++------------------------+          +------------------------+
+| Stable Diffusion WebUI |   HTTP   | Photo Booth Client     |
+| Flask Server           | <------> | requests.post()        |
+| Port 7860              |   REST   | Timeout: 180s          |
++------------------------+          +------------------------+
+         |                                   |
+         v                                   v
+  PyTorch + CUDA                      OpenCV + MediaPipe
+  GPU 0                               CPU threads
+
+Process independant                 Process principal
+Python 3.10 (venv WebUI)            Python 3.10 (venv photobooth)
+Memoire: ~15 GB (modeles)           Memoire: ~500 MB
+VRAM: 9-12 GB                       VRAM: 0 GB
+</pre>
+
+
+  ## TIMELINE D'UNE SESSION
+
+t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
+
+t=1s      Détection stable -> Activation du vérin vers position HAUTE.
+          Affichage : "Déplacement caméra en cours..."
+
+t=5-10s   Caméra stabilisée en hauteur. Passage au MENU 2.
+          Affichage : Retour vidéo Live (Vue Plongée).
+
+t=10s     Utilisateur fait signe V (✌️) pendant 2s.
+
+t=12s     Validation --> Countdown "3-2-1" -> Capture Photo.
+
+t=15s     Envoi vers Stable Diffusion XL.
+
+t=45s     Réception Image IA.
+          Options : Pouce (👍) pour imprimer ou Poing (✊) pour changer de hauteur.
+
+ ---------------------------------------  SI IMPRESSION  --------------------------------------------
+
+t=47s    Envoi CUPS: input.png + IA1.png + IA2.png
+
+t=50-60s  Impression physique (~8s par page A6)
+
+t=60s     Etat: "waiting_victory" (pret nouvelle session)
+
+
+
+## DEPENDANCES CLES
+
+
+photobooth.py                    Automatic1111 WebUI
++-- opencv-python 4.11.0.86      +-- torch 2.5.1+cu121
++-- mediapipe 0.10.21            +-- diffusers 0.31.0
++-- numpy 1.26.2                 +-- transformers 4.30.2
++-- requests 2.32.5              +-- xformers 0.0.23.post1
++-- Python 3.10.x                +-- accelerate 0.21.0
+                                 +-- safetensors 0.4.2
+                                 +-- controlnet_aux 0.0.10
+                                 +-- onnxruntime-gpu 1.17.1
+
+Partagés (système):
++-- CUDA Toolkit 12.1
++-- cuDNN 9.1
++-- NVIDIA Driver 525+
+
+
+
+## RESUME ARCHITECTURE SIMPLIFIEE
+
+
+[Signe Main]
+            |
+            v
+        [Webcam] <-----------+ 
+            |                |
+         (frame)             | [Ajustement Physique]
+            |                | (Position 1, 2 ou 3)
+            v                |
+     [photobooth.py] --------+----[Vérin Électrique]
+            |          (Signal GPIO/USB)
+            |
+            | HTTP POST (Base64)
+            v
+      [Automatic1111]
+            | Port 7860
+            | SDXL + ControlNet
+            | GPU: 9-12 GB VRAM
+            v
+     [photobooth.py]
+            |
+      +-----+-----+
+      |           |
+      v           v
+   [Écran]   [Imprimante]
+
+
+
+
+### IMPORTANT : Python 3.10 OBLIGATOIRE pour WebUi
+
+Stable Diffusion WebUI nécessite **Python 3.10.x** (pas 3.11, 3.12 ou supérieur) [web:1][web:8].
+
+### Étape 1 : Installer Python 3.10
+
+#### Sur Ubuntu/Debian
+```bash
+sudo apt update
+sudo apt install python3.10 python3.10-venv python3.10-dev
