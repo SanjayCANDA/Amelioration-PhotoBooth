@@ -18,7 +18,10 @@ Ce projet crée un photobooth interactif et automatisé qui :
 - Scènes futuristes avec interfaces holographiques cyan/orange
 - Arrière-plans technologiques complexes
 
-  ## Prérequis matériel
+
+  ## Prérequis pour l'utilisation
+
+  ### Prérequis matériel
 
 |   Composant    |                 Spécification                      |
 |----------------|----------------------------------------------------|
@@ -28,6 +31,19 @@ Ce projet crée un photobooth interactif et automatisé qui :
 | **Écran**      | 3840×1080 (dual monitor) recommandé                |
 | **Imprimante** | HP Color LaserJet 5700 + papier A6 glacé 200g      |
 | **RAM**        | 16 GB minimum (32 GB recommandé pour SDXL)         |
+
+
+  ### Prérequis : Python 3.10 OBLIGATOIRE pour WebUi
+
+Stable Diffusion WebUI nécessite **Python 3.10.x** (pas 3.11, 3.12 ou supérieur) [web:1][web:8].
+
+#### Installer Python 3.10 :
+Sur Ubuntu/Debian
+
+```bash
+sudo apt update
+sudo apt install python3.10 python3.10-venv python3.10-dev
+```
 
   ## PHOTO BOOTH IA - ARCHITECTURE SYSTEME
 
@@ -443,16 +459,3 @@ Partagés (système):
       v           v
    [Écran]   [Imprimante]
 </pre>
-
-
-
-### IMPORTANT : Python 3.10 OBLIGATOIRE pour WebUi
-
-Stable Diffusion WebUI nécessite **Python 3.10.x** (pas 3.11, 3.12 ou supérieur) [web:1][web:8].
-
-### Étape 1 : Installer Python 3.10
-
-#### Sur Ubuntu/Debian
-```bash
-sudo apt update
-sudo apt install python3.10 python3.10-venv python3.10-dev
