@@ -185,15 +185,15 @@ Position Basse :  ☝  -> 1 doigt
         __  __ __ __
       /              \
      /    /   /   /   \ 
-    |    |   |   |   | \
-    |    |   |   |   | |
-    |    |   |   |   | |
-  __ \__/\__/\__/\_/  |
+    |    |   |   |  |  \
+    |    |   |   |  |  |
+    |    |   |   |  |  |
+  __ \__/\__/\__/\_/  /
  /  |__|             /
  |  /               /
-  \                |
-   \               |   
-    |              |
+  \___             /
+      \           |   
+       |          |
 </pre>
 
 Position Milieu :  ✌  (2 doigts)
@@ -205,6 +205,21 @@ Menu 2 : Capture & Navigation
 Prendre Photo :  ✌  (2 doigts maintenus)
 
 Retour au menu :  ✊  (Poing fermé)
+
+<pre>
+        __  __ __ __
+      /              \
+     /    /   /   /   \ 
+    |    |   |   |  |  \
+    |    |   |   |  |  |
+    |    |   |   |  |  |
+  __ \__/\__/\__/\_/  /
+ /  |__|             /
+ |  /               /
+  \___             /
+      \           |   
+       |          |
+</pre>
 
 Impression :  👍  (Pouce levé)
 
