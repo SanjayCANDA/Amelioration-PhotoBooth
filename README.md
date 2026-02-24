@@ -180,17 +180,23 @@ t=60s     Etat: "waiting_victory" (pret nouvelle session)
 
 Menu 1 : Réglage de la Hauteur (Vérin)
 
-Position Basse :  ☝  -> 1 doigt
+Position Basse :  ☝
 <pre>
-        __  __ __ __
-      /              \
-     /    /   /   /   \ 
-    |    |   |   |  |  \
-    |    |   |   |  |  |
-    |    |   |   |  |  |
-  __ \__/\__/\__/\_/  /
+    # 1 doigt
+        __
+       /  |
+      |   |
+      |   |
+      |   |
+      |    \_______  
+      |             \
+      /  /   /   /   \ 
+     |  |   |   |  |  \
+     |  |   |   |  |  |
+ ____|  |   |   |  |  |
+/  __ \  \__/\__/\_/  /
  /  |__|             /
- |  /               /
+ |                /
   \___             /
       \           |   
        |          |
@@ -204,8 +210,7 @@ Menu 2 : Capture & Navigation
 
 Prendre Photo :  ✌  (2 doigts maintenus)
 
-Retour au menu :  ✊  (Poing fermé)
-
+Retour au menu :  ✊ 
 <pre>
         # Poing fermé
         __  __ __ __
