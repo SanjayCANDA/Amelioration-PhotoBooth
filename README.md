@@ -42,6 +42,26 @@ Ce projet crée un photobooth interactif et automatisé qui :
           Drivers: V4L2 (webcam), CUPS (imprimante), GPIO/Serial (Vérin)
                     
 
+ ## GUIDE DES SIGNES 
+
+### Menu 1 : Réglage de la Hauteur (Vérin)
+
+Position Basse :  ☝  (1 doigt)
+
+Position Milieu :  ✌  (2 doigts)
+
+Position Haute :  🖖  (3 doigts)
+
+### Menu 2 : Capture & Navigation
+
+Prendre Photo :  ✌  (2 doigts maintenus)
+
+Retour au menu :  ✊  (Poing fermé)
+
+Impression :  👍  (Pouce levé)
+
+
+
   ## APPLICATION PHOTOBOOTH (photobooth.py)
 
   ### MODULE 1: GESTION DU VÉRIN
@@ -85,6 +105,7 @@ Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
                                     HTTP POST Request (JSON)
 </pre>
 
+
   ### MODULE 4: POST-TRAITEMENT
 <pre>
 Decodage Base64 --> Application Logo CPE --> Sauvegarde
@@ -92,6 +113,7 @@ Decodage Base64 --> Application Logo CPE --> Sauvegarde
                                              timestamp_IA1.png
                                              timestamp_IA2.png
 </pre>
+
 
   ### MODULE 5: AFFICHAGE (OpenCV)
 
@@ -105,6 +127,7 @@ Fenetre 1: "Webcam" (1440x810)
 Fenetre 2: "Image StableDiffusion" (1440x1620)
 - Affiche derniere image IA
 - Mise a jour apres generation
+
 
   ### MODULE 6: IMPRESSION
 
@@ -157,7 +180,21 @@ t=60s     Etat: "waiting_victory" (pret nouvelle session)
 
 Menu 1 : Réglage de la Hauteur (Vérin)
 
-Position Basse :  ☝  (1 doigt)
+Position Basse :  ☝  -> 1 doigt
+<pre>
+        __  __ __ __
+      /              \
+     /    /   /   /   \ 
+    |    |   |   |   | \
+    |    |   |   |   | |
+    |    |   |   |   | |
+  __ \__/\__/\__/\_/  |
+ /  |__|             /
+ |  /               /
+  \                |
+   \               |   
+    |              |
+</pre>
 
 Position Milieu :  ✌  (2 doigts)
 
