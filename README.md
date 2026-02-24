@@ -92,7 +92,7 @@ t=15s     Envoi vers Stable Diffusion XL.
 t=45s     Réception Image IA.
           Options : Pouce (👍) pour imprimer ou Poing (✊) pour changer de hauteur.
 
-                            [SI IMPRESSION]
+ -------------------------------  SI IMPRESSION  --------------------------------------------
 
 t=47s    Envoi CUPS: input.png + IA1.png + IA2.png
 
