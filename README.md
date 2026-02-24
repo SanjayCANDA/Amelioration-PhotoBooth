@@ -29,7 +29,7 @@ Ce projet crée un photobooth interactif et automatisé qui :
 | **Imprimante** | HP Color LaserJet 5700 + papier A6 glacé 200g      |
 | **RAM**        | 16 GB minimum (32 GB recommandé pour SDXL)         |
 
-
+  ## PHOTO BOOTH IA - ARCHITECTURE SYSTEME
 
                           COUCHE MATERIELLE
                           -----------------
@@ -44,7 +44,7 @@ Ce projet crée un photobooth interactif et automatisé qui :
 
   ## APPLICATION PHOTOBOOTH (photobooth.py)
 
-  ### MODULE 1: GESTION DU VÉRIN (NOUVEAU)
+  ### MODULE 1: GESTION DU VÉRIN
 
 Le système utilise le comptage de doigts pour définir la hauteur physique avant la capture.
 
@@ -55,9 +55,8 @@ Le système utilise le comptage de doigts pour définir la hauteur physique avan
 **HAUT**	    |    3 Doigts levés	      |    Plongée (High Angle)
 
 
-  ### MODULE 2: MACHINE A ETATS (Mise à jour)
+  ### MODULE 2: MACHINE A ETATS
 
-Plaintext
 [STATE: SETUP_HEIGHT] --(1, 2 ou 3 doigts)--> [ACTION: MOVE_ACTUATOR]
        ^                                              |
        |                                              v
@@ -71,6 +70,16 @@ Plaintext
        |
        +--(pouce 2s)--> [PRINTING]
        +--(V-sign 2s)--> [RESET TO SETUP_HEIGHT]
+
+  ### MODULE 3: PREPARATION IMAGE
+
+Frame capturee (numpy array BGR 1280x720)
+    |
+    v
+Redimensionnement --> Encodage Base64 --> Sauvegarde _input.png + Logo CPE
+                                                |
+                                                v
+                                    HTTP POST Request (JSON)
 
 
   ## TIMELINE D'UNE SESSION
