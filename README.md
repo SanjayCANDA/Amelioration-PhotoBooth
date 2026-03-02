@@ -1,6 +1,8 @@
   # Photo Booth IA avec Ajustement Dynamique - MDM 2026
 Photo booth intelligent avec contrôle motorisé de la hauteur par gestes, génération d'images par IA utilisant Stable Diffusion XL et détection de gestes en temps réel.
 
+Ce projet est directement inspiré d'un modèle de Photo Booth déjà existant, le but ici est de proposer une amélioration potentielle de ce projet avec l'ajout d'un contrôle de hauteur de la caméra.
+
   ## Description
 Ce projet crée un photobooth interactif et automatisé qui :
 
@@ -18,6 +20,9 @@ Ce projet crée un photobooth interactif et automatisé qui :
 - Scènes futuristes avec interfaces holographiques cyan/orange
 - Arrière-plans technologiques complexes
 
+
+  ## Story Board
+  ![Storyboard Photo Booth IA](img_bd.png)
 
   ## Prérequis pour l'utilisation et l'application de se projet
 
@@ -517,7 +522,7 @@ Le script photobooth.py est basé sur une Machine à États (Finite State Machin
   ### Contrôle du Vérin (Actionneur)
 Pour intégrer le vérin motorisé à l'architecture, il faut ajouter un module de communication (généralement Série/USB ou GPIO) et définir trois méthodes de contrôle spécifiques.
 
-#### Méthodes à implémenter :
+  #### Méthodes à implémenter :
 
 ```Python
 def move_actuator(position):
@@ -561,7 +566,7 @@ Le code passera par un nouvel état initial SETUP_HEIGHT :
 - Phase d'Action : move_actuator est appelée pour déplacer la webcam.
 - Phase de Transition : Une fois le vérin stable, le système bascule vers l'état waiting_victory pour lancer la session    photo.
 
-
+================================================================================
 
 ## Problème éventuel du projet 
 
@@ -593,15 +598,17 @@ Il faut une séparation stricte entre le Menu Réglage et le Menu Capture pour �
 
 
 
-## Amélioration de l'IA et du Rendu (Software)
+## Amélioration possible
 
-**Multi-ControlNet** : Actuellement, vous utilisez OpenPose. Ajouter Canny ou Depth en parallèle permettrait de conserver non seulement la pose de l'utilisateur, mais aussi la structure précise des objets qu'il tient (ex: un accessoire de photobooth) ou les détails de l'arrière-plan.
+---- Software ----
+
+**Multi-ControlNet** : Actuellement, on utilise OpenPose. Ajouter Canny ou Depth en parallèle permettrait de conserver non seulement la pose de l'utilisateur, mais aussi la structure précise des objets qu'il tient (ex: un accessoire de photobooth) ou les détails de l'arrière-plan.
 
 **Inpainting Automatique** : Utiliser l'IA pour corriger uniquement les visages ou les mains après la génération (souvent les points faibles de SDXL), afin de garantir un résultat esthétique parfait à chaque impression.
 
 **Styles Dynamiques** : Permettre à l'utilisateur de choisir son univers via un geste (ex: 4 doigts pour un style "Cyberpunk", 5 doigts pour "Peinture à l'huile") au lieu de rester figé sur la "Ligne Claire".
 
-### Évolution Mécanique et Hardware
+---- Hardware ----
 
 **Asservissement par le Regard (Auto-Framing)** : Au lieu de positions fixes (Haut/Milieu/Bas), le vérin pourrait s'ajuster dynamiquement pour que le visage de l'utilisateur soit toujours parfaitement centré au milieu de l'image (via les coordonnées du nez détectées par MediaPipe).
 
@@ -609,19 +616,13 @@ Il faut une séparation stricte entre le Menu Réglage et le Menu Capture pour �
 
 Éclairage Adaptatif (Ring Light Smart) : Connecter une bague LED dont l'intensité et la température de couleur (chaud/froid) changent en fonction du style IA choisi ou de la luminosité ambiante détectée.
 
-### Interaction et Expérience Utilisateur (UX)
+---- Expérience Utilisateur ----
 
 **Réalité Augmentée "Ghost"** : Afficher sur l'écran un contour transparent (pose de référence) que l'utilisateur doit essayer d'imiter pour obtenir la meilleure génération IA possible.
 
 **Envoi Cloud / QR Code** : Au lieu de simplement imprimer, générer un QR Code unique sur l'écran à la fin du processus pour que l'utilisateur puisse télécharger sa photo directement sur son smartphone.
 
 Audio-Réactivité : Ajouter des instructions vocales synthétisées ("Levez deux doigts pour monter la caméra") ou des sons déclenchés par les mouvements du vérin pour rendre la machine plus "vivante".
-
-### Robustesse et Déploiement
-
-**Mode "Kiosque" Sécurisé** : Verrouiller le système d'exploitation pour que l'utilisateur ne puisse pas fermer la fenêtre OpenCV ou accéder au bureau Windows/Linux.
-
-**Gestion de File d'Attente** : Si beaucoup de gens utilisent le photobooth, implémenter un système qui traite les images en arrière-plan pendant que la personne suivante se place, afin d'optimiser le débit du GPU.
 
 
 
