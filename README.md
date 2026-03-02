@@ -63,10 +63,6 @@ sudo apt update
 sudo apt install python3.10 python3.10-venv python3.10-dev
 ```
 
-  ## STORY BORD
-
-
-
   ## TIMELINE D'UNE SESSION
 
 t=0s      MENU 1 : Choix de la hauteur. Utilisateur lève 3 doigts (🖖).
