@@ -1,36 +1,38 @@
-# 🎨 Photo Booth IA - MDM 2025
+🎨 Photo Booth IA - MDM 2025
 
 Photo booth intelligent avec génération d'images par IA utilisant Stable Diffusion XL et détection de gestes en temps réel.
 
-## 📋 Description
+📋 Description
 
 Ce projet crée un photobooth interactif qui :
-- 📸 Capture des photos via webcam avec détection de gestes (signe V ✌️, pouce levé 👍)
-- Génère des images stylisées **"Comic Book Ligne Claire"** via Stable Diffusion XL + ControlNet OpenPose
-- Applique automatiquement un logo transparent (template CPE)
--  Imprime les résultats sur imprimante HP Color LaserJet au format A6 glacé 🖨️
 
-### Style graphique
-- **Bande dessinée européenne** (ligne claire)
-- Traits nets et épurés, aplats de couleurs avec dégradés
-- Scènes futuristes avec interfaces holographiques cyan/orange
-- Arrière-plans technologiques complexes
+📸 Capture des photos via webcam avec détection de gestes (signe V ✌️, pouce levé 👍)
 
----
+Génère des images stylisées "Comic Book Ligne Claire" via Stable Diffusion XL + ControlNet OpenPose
 
-## 🔧 Prérequis matériel
+Applique automatiquement un logo transparent (template CPE)
 
+ Imprime les résultats sur imprimante HP Color LaserJet au format A6 glacé 🖨️
+ 
+Style graphique
+
+Bande dessinée européenne (ligne claire)
+
+Traits nets et épurés, aplats de couleurs avec dégradés
+Scènes futuristes avec interfaces holographiques cyan/orange
+Arrière-plans technologiques complexes
+
+
+***🔧 Prérequis matériel
 | Composant | Spécification |
 |-----------|--------------|
-| **GPU** | NVIDIA avec CUDA (RTX 2060+ recommandé) |
-| **Webcam** | Résolution 720p minimum |
-| **Écran** | 3840×1080 (dual monitor) recommandé |
-| **Imprimante** | HP Color LaserJet 5700 + papier A6 glacé 200g |
-| **RAM** | 16 GB minimum (32 GB recommandé pour SDXL) |
+| GPU | NVIDIA avec CUDA (RTX 2060+ recommandé) |
+| Webcam | Résolution 720p minimum |
+| Écran | 3840×1080 (dual monitor) recommandé |
+| Imprimante | HP Color LaserJet 5700 + papier A6 glacé 200g |
+| RAM | 16 GB minimum (32 GB recommandé pour SDXL) |
 
-
-## 🔧 Dépendances de Stable Diffusion WebUI :
-
+🔧 Dépendances de Stable Diffusion WebUI :
 PyTorch 2.5.1 + CUDA 12.1 ✅
 
 xFormers 0.0.23 pour optimisations ✅
@@ -43,8 +45,8 @@ MediaPipe 0.10.21 (détection gestes) ✅
 
 ONNX Runtime GPU 1.17.1 (inference) ✅
 
-## 🔧 Dépendances du Photo Booth  :
 
+🔧 Dépendances du Photo Booth  :
 OpenCV 4.11.0 ✅
 
 MediaPipe 0.10.21 ✅
@@ -53,12 +55,8 @@ NumPy 1.26.2 ✅
 
 Requests 2.32.5 ✅
 
----
 
-## PHOTO BOOTH IA - ARCHITECTURE SYSTEME
-
-```text
-
+***PHOTO BOOTH IA - ARCHITECTURE SYSTEME
 
 COUCHE MATERIELLE
 -----------------
@@ -67,19 +65,17 @@ COUCHE MATERIELLE
             |                   |                   |
             +-------------------+-------------------+
                                 |
+                                
 SYSTEME D'EXPLOITATION (Linux/Windows)
 Drivers: V4L2 (webcam), CUPS (imprimante), NVIDIA (GPU)
                                 |
 ENVIRONNEMENT PYTHON 3.10 (venv)
 PyTorch 2.x + CUDA + xFormers
-```
+APPLICATION PHOTOBOOTH (photobooth.py)
 
 
-## APPLICATION PHOTOBOOTH (photobooth.py)
-
-
-```text
 MODULE 1: CAPTURE & DETECTION
+
 ------------------------------
 OpenCV           MediaPipe         Detection Gestes
 VideoCapture --> Hands Module -->  - Victory (V)
